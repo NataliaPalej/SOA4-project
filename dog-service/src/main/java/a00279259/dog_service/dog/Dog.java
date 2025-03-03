@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 public class Dog {
 	
 	@Id
-	private int dogID;
+	private int dogId;
 	@Column(name="name")
 	private String name;
 	@Column(name="breed")
@@ -33,12 +33,12 @@ public class Dog {
     }
 
 	
-	public int getDogID() {
-		return dogID;
+	public int getdogId() {
+		return dogId;
 	}
 	
-	public void setDogID(int dogID) {
-		this.dogID = dogID;
+	public void setdogId(int dogId) {
+		this.dogId = dogId;
 	}
 	
 	public String getName() {
@@ -83,7 +83,7 @@ public class Dog {
 
 	@Override
 	public String toString() {
-		return "Dog [dogID=" + dogID + ", name=" + name + ", breed=" + breed + ", age=" + age + ", temperament="
+		return "Dog [dogId=" + dogId + ", name=" + name + ", breed=" + breed + ", age=" + age + ", temperament="
 				+ temperament + ", available=" + available + "]";
 	}
 }

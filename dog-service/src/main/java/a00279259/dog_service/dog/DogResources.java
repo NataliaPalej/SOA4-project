@@ -33,12 +33,12 @@ public class DogResources {
 		return dogRepository.findAll();
 	}
 	
-	@GetMapping("/{dogID}")
-	public ResponseEntity<Dog> getDog(@PathVariable int dogID){
-		Optional<Dog> dog = dogRepository.findById(dogID);
+	@GetMapping("/{dogId}")
+	public ResponseEntity<Dog> getDog(@PathVariable int dogId){
+		Optional<Dog> dog = dogRepository.findById(dogId);
 		
 		if(dog.isEmpty()) {
-			System.out.println("Dog with ID: " + dogID + " does not exist.");
+			System.out.println("Dog with ID: " + dogId + " does not exist.");
 			return ResponseEntity.notFound().build();
 		} else {
 			return ResponseEntity.ok(dog.get());
@@ -48,38 +48,38 @@ public class DogResources {
 	@PostMapping
 	public ResponseEntity<Dog> postDog(@RequestBody Dog dog){
 		Dog savedDog = dogRepository.save(dog);
-		URI location = URI.create("/dogs/" + savedDog.getDogID());
+		URI location = URI.create("/dogs/" + savedDog.getdogId());
 		System.out.println("Dog " + dog + " was successfully saved");
 		return ResponseEntity.created(location).body(savedDog);
 	}
 	
-	@PutMapping("/{dogID}")
-	public ResponseEntity<Dog> updateDog(@PathVariable int dogID, @RequestBody Dog updatedDog){
-		Optional<Dog> existingDog = dogRepository.findById(dogID);
+	@PutMapping("/{dogId}")
+	public ResponseEntity<Dog> updateDog(@PathVariable int dogId, @RequestBody Dog updatedDog){
+		Optional<Dog> existingDog = dogRepository.findById(dogId);
 		
 		if(existingDog.isEmpty()) {
-			System.out.println("Dog with ID: " + dogID + " does not exist.");
+			System.out.println("Dog with ID: " + dogId + " does not exist.");
 			return ResponseEntity.notFound().build();
 		}
 		// Ensure the ID stays the same
-		updatedDog.setDogID(dogID); 
+		updatedDog.setdogId(dogId); 
 		Dog savedDog = dogRepository.save(updatedDog);
-		System.out.println("Dog " + dogID + " was successfully updated");
+		System.out.println("Dog " + dogId + " was successfully updated");
 		return ResponseEntity.ok(savedDog); // 200 OK
 	}
 	
-	@DeleteMapping("/dogs/{dogID}")
-	public ResponseEntity<String> deleteDog(@PathVariable int dogID){
-		Optional<Dog> existingDog = dogRepository.findById(dogID);
+	@DeleteMapping("/dogs/{dogId}")
+	public ResponseEntity<String> deleteDog(@PathVariable int dogId){
+		Optional<Dog> existingDog = dogRepository.findById(dogId);
 		
 		if(existingDog.isEmpty()) {
-			System.out.println("Dog with ID: " + dogID + " does not exist.");
+			System.out.println("Dog with ID: " + dogId + " does not exist.");
 			return ResponseEntity.notFound().build();
 		}
 		
-		dogRepository.deleteById(dogID);
-		System.out.println("Dog ID: " + dogID + " was successfully deleted.");
-		return ResponseEntity.ok("Dog ID " + dogID + " deleted successfully.");
+		dogRepository.deleteById(dogId);
+		System.out.println("Dog ID: " + dogId + " was successfully deleted.");
+		return ResponseEntity.ok("Dog ID " + dogId + " deleted successfully.");
 	}
 	
 }
