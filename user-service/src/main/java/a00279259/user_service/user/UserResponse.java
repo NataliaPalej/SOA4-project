@@ -8,12 +8,12 @@ public class UserResponse {
 	private String userName, email, preferredBreed, status;
 	private Dog dog;
 	
-	public UserResponse(int id, String userName, String email, String preferredBreed, String status, Dog dog) {
-		this.id = id;
-		this.userName = userName;
-		this.email = email;
-		this.preferredBreed = preferredBreed;
-		this.status = status;
+	public UserResponse(User user, Dog dog) {
+		this.id = user.getId();
+		this.userName = user.getUserName();
+		this.email = user.getEmail();
+		this.preferredBreed = user.getPreferredBreed();
+		this.status = user.getStatus();
 		this.dog = dog;
 	}
 	
