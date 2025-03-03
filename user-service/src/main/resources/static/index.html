@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid black; text-align: left; }
+        th { background-color: #f4f4f4; }
+        button { margin-top: 10px; padding: 8px 15px; cursor: pointer; }
+        .status { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>User Management</h1>
+
+    <button onclick="fetchUsers()">Refresh Users</button>
+    <p>Status: <span id="status" class="status">Waiting...</span></p>
+
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Preferred Breed</th>
+                <th>Status</th>
+                <th>Dog (if any)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Add / Edit User</h2>
+    <form id="userForm">
+        <input type="hidden" id="userId">
+        <label>Name: <input type="text" id="name" required></label><br>
+        <label>Email: <input type="email" id="email" required></label><br>
+        <label>Preferred Breed: <input type="text" id="preferredBreed"></label><br>
+        <label>Status: 
+            <select id="status">
+                <option value="PENDING">PENDING</option>
+                <option value="APPROVED">APPROVED</option>
+                <option value="REJECTED">REJECTED</option>
+            </select>
+        </label><br>
+        <label>Dog ID (Optional): <input type="number" id="dogId"></label><br>
+        <button type="submit">Save User</button>
+    </form>
+
+    <script>
+        const API_URL = "http://localhost:8080/users";
+
+        function fetchUsers() {
+            fetch(API_URL, { method: "GET" })
+                .then(response => {
+                    document.getElementById("status").textContent = response.status === 304 ? "Not Modified (Cached)" : "OK (Fetched)";
+                    return response.json();
+                })
+                .then(users => {
+                    const tableBody = document.querySelector("#usersTable tbody");
+                    tableBody.innerHTML = "";
+                    users.forEach(user => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = 
+                            <td>${user.id}</td>
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td>${user.preferredbreed}</td>
+                            <td>${user.status}</td>
+                            <td>${user.dog ? ${user.dog.name} (ID: ${user.dog.dogId}) : "No Dog"}</td>
+                            <td>
+                                <button onclick="editUser(${user.id}, '${user.userName}', '${user.email}', '${user.preferredBreed}', '${user.status}', ${user.dog ? user.dog.dogId : 'null'})">Edit</button>
+                            </td>
+                        ;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error("Error fetching users:", error));
+        }
+
+        function editUser(id, name, email, preferredBreed, status, dogId) {
+            document.getElementById("userId").value = id;
+            document.getElementById("name").value = name;
+            document.getElementById("email").value = email;
+            document.getElementById("preferredBreed").value = preferredBreed;
+            document.getElementById("status").value = status;
+            document.getElementById("dogId").value = dogId || "";
+        }
+
+        document.getElementById("userForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const id = document.getElementById("userId").value;
+            const userData = {
+                userName: document.getElementById("name").value,
+                email: document.getElementById("email").value,
+                preferredBreed: document.getElementById("preferredBreed").value,
+                status: document.getElementById("status").value,
+                dogId: document.getElementById("dogId").value ? parseInt(document.getElementById("dogId").value) : null
+            };
+
+            const requestMethod = id ? "PUT" : "POST";
+            const requestUrl = id ? ${API_URL}/${id} : API_URL;
+
+            fetch(requestUrl, {
+                method: requestMethod,
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userData)
+            })
+            .then(response => {
+                if (response.ok) {
+                    fetchUsers();
+                    document.getElementById("userForm").reset();
+                    document.getElementById("userId").value = "";
+                } else {
+                    console.error("Error saving user:", response);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+        });
+
+        window.onload = fetchUsers;
+    </script>
+
+</body>
+</html>
