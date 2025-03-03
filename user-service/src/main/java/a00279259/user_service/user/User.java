@@ -1,31 +1,38 @@
 package a00279259.user_service.user;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
-@Entity
+// Renamed table to "person" as "user" is reserved keyword in H2 
+@Entity(name="person")
 public class User {
 	
 	@Id
 	@GeneratedValue
 	private int id;
-	private String userName;
+	@Column(name = "name")
+	private String name;
+	@Column(name = "email")
 	private String email;
-	private String preferredBreed;
+	@Column(name = "preferredbreed")
+	private String preferredbreed;
+	@Column(name = "status")
 	private String status;
-	private int dogId;
+	@Column(name = "dogid", nullable = true)
+	private Integer dogId;
 	
 	public User() {
 		super();
 	}
 
-	public User(int id, String userName, String email, String preferredBreed, String status, int dogId) {
+	public User(int id, String name, String email, String preferredbreed, String status, Integer dogId) {
 		super();
 		this.id = id;
-		this.userName = userName;
+		this.name = name;
 		this.email = email;
-		this.preferredBreed = preferredBreed;
+		this.preferredbreed = preferredbreed;
 		this.status = status;
 		this.dogId = dogId;
 	}
@@ -39,11 +46,11 @@ public class User {
 	}
 
 	public String getUserName() {
-		return userName;
+		return name;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUserName(String name) {
+		this.name = name;
 	}
 
 	public String getEmail() {
@@ -55,11 +62,11 @@ public class User {
 	}
 
 	public String getPreferredBreed() {
-		return preferredBreed;
+		return preferredbreed;
 	}
 
-	public void setPreferredBreed(String preferredBreed) {
-		this.preferredBreed = preferredBreed;
+	public void setPreferredBreed(String preferredbreed) {
+		this.preferredbreed = preferredbreed;
 	}
 
 	public String getStatus() {
@@ -70,17 +77,17 @@ public class User {
 		this.status = status;
 	}
 
-	public int getDogId() {
+	public Integer getDogId() {
 		return dogId;
 	}
 
-	public void setDogId(int dogId) {
+	public void setDogId(Integer dogId) {
 		this.dogId = dogId;
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", userName=" + userName + ", email=" + email + ", preferredBreed=" + preferredBreed
+		return "User [id=" + id + ", name=" + name + ", email=" + email + ", preferredBreed=" + preferredbreed
 				+ ", status=" + status + ", dogId=" + dogId + "]";
 	}
 }

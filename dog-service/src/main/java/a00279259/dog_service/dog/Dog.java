@@ -8,7 +8,7 @@ import jakarta.persistence.Id;
 public class Dog {
 	
 	@Id
-	private int dogId;
+	private Integer dogId;
 	@Column(name="name")
 	private String name;
 	@Column(name="breed")
@@ -33,11 +33,11 @@ public class Dog {
     }
 
 	
-	public int getdogId() {
+	public Integer getdogId() {
 		return dogId;
 	}
 	
-	public void setdogId(int dogId) {
+	public void setdogId(Integer dogId) {
 		this.dogId = dogId;
 	}
 	

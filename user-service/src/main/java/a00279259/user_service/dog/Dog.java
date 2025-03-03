@@ -2,7 +2,8 @@ package a00279259.user_service.dog;
 
 public class Dog {
 	
-	private int dogID, age;
+	private Integer dogId;
+	private int age;
 	private String name, breed, temperament;;
 	private boolean available;
 		
@@ -19,12 +20,12 @@ public class Dog {
     }
 
 	
-	public int getDogID() {
-		return dogID;
+	public Integer getDogId() {
+		return dogId;
 	}
 	
-	public void setDogID(int dogID) {
-		this.dogID = dogID;
+	public void setDogId(Integer dogId) {
+		this.dogId = dogId;
 	}
 	
 	public String getName() {
@@ -69,7 +70,7 @@ public class Dog {
 
 	@Override
 	public String toString() {
-		return "Dog [dogID=" + dogID + ", name=" + name + ", breed=" + breed + ", age=" + age + ", temperament="
+		return "Dog [dogId=" + dogId + ", name=" + name + ", breed=" + breed + ", age=" + age + ", temperament="
 				+ temperament + ", available=" + available + "]";
 	}
 }

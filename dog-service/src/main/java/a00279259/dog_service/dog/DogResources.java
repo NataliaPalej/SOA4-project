@@ -34,8 +34,12 @@ public class DogResources {
 	}
 	
 	@GetMapping("/{dogId}")
-	public ResponseEntity<Dog> getDog(@PathVariable int dogId){
+	public ResponseEntity<Dog> getDog(@PathVariable Integer dogId){
 		Optional<Dog> dog = dogRepository.findById(dogId);
+		
+		if (dogId == null) {
+	        return ResponseEntity.badRequest().body(null);
+	    }
 		
 		if(dog.isEmpty()) {
 			System.out.println("Dog with ID: " + dogId + " does not exist.");
@@ -54,7 +58,7 @@ public class DogResources {
 	}
 	
 	@PutMapping("/{dogId}")
-	public ResponseEntity<Dog> updateDog(@PathVariable int dogId, @RequestBody Dog updatedDog){
+	public ResponseEntity<Dog> updateDog(@PathVariable Integer dogId, @RequestBody Dog updatedDog){
 		Optional<Dog> existingDog = dogRepository.findById(dogId);
 		
 		if(existingDog.isEmpty()) {
@@ -69,7 +73,7 @@ public class DogResources {
 	}
 	
 	@DeleteMapping("/dogs/{dogId}")
-	public ResponseEntity<String> deleteDog(@PathVariable int dogId){
+	public ResponseEntity<String> deleteDog(@PathVariable Integer dogId){
 		Optional<Dog> existingDog = dogRepository.findById(dogId);
 		
 		if(existingDog.isEmpty()) {

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import a00279259.user_service.dog.Dog;
@@ -20,6 +21,7 @@ import a00279259.user_service.user.User;
 import a00279259.user_service.user.UserResponse;
 
 @RestController
+@RequestMapping("/users")
 public class UserResource {
 	private UserRepository userRepository;
 	private DogClient dogClient;
@@ -30,26 +32,39 @@ public class UserResource {
 		this.dogClient = dogClient;
 	}
 	
-	@GetMapping("/users")
+	@GetMapping
 	public List<User> getAllUsers(){
 		System.out.println("getAllUsers() sucessful.");
 		return userRepository.findAll();
 	}
 	
-	@GetMapping("/users/{id}")
-	public ResponseEntity<UserResponse> getUser(@PathVariable int id){
-		Optional<User> user = userRepository.findById(id);
-		
-		if(user.isEmpty()) {
-			System.out.println("User with ID: " + id + " does not exist.");
-			return ResponseEntity.notFound().build();
-		} else {
-			Dog dog = dogClient.getDogById(user.get().getDogId());
-			UserResponse userResponse = new UserResponse(user.get(), dog);
-			System.out.println("getUser() ID: " + id + " sucessfully retrieved.");
-			return ResponseEntity.ok(userResponse);
-		}
+	@GetMapping("/{id}")
+	public ResponseEntity<UserResponse> getUser(@PathVariable int id) {
+	    Optional<User> user = userRepository.findById(id);
+
+	    if (user.isEmpty()) {
+	        System.out.println("User with ID: " + id + " does not exist.");
+	        return ResponseEntity.notFound().build();
+	    }
+
+	    Integer dogId = user.get().getDogId();
+	    System.out.println("User ID " + id + " has dogId: " + dogId); // Debugging
+
+	    Dog dog = null;
+	    if (dogId != null) {
+	        try {
+	            dog = dogClient.getDogById(dogId);
+	            System.out.println("Fetched Dog: " + dog); // Debugging
+	        } catch (Exception e) {
+	            System.out.println("Dog with ID " + dogId + " not found in dog-service.");
+	        }
+	    }
+
+	    UserResponse userResponse = new UserResponse(user.get(), dog);
+	    System.out.println("Returning UserResponse: " + userResponse);
+	    return ResponseEntity.ok(userResponse);
 	}
+
 	
 	@PostMapping
     public ResponseEntity<User> addUser(@RequestBody User user) {
@@ -59,7 +74,7 @@ public class UserResource {
         return ResponseEntity.created(location).body(savedUser); // 201 Created
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<User> editUser(@PathVariable int id, @RequestBody User updatedUser) {
         Optional<User> existingUser = userRepository.findById(id);
         if (existingUser.isEmpty()) {
@@ -68,7 +83,8 @@ public class UserResource {
         }
         
         // Check if dog exists before updating 
-        Dog dog = dogClient.getDogById(updatedUser.getDogId());
+        Integer dogId = updatedUser.getDogId();
+        Dog dog = dogClient.getDogById(dogId);
         if (dog == null) {
         	System.out.println("\neditUser() :: dog ID does not exist.\n");
         	return ResponseEntity.badRequest().body(null); // 400 Bad Request
@@ -80,7 +96,7 @@ public class UserResource {
         return ResponseEntity.ok(savedUser); // 200 OK
     }
 	
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStudent(@PathVariable int id) {
 		Optional<User> user = userRepository.findById(id);
 		if (user.isEmpty()) {
