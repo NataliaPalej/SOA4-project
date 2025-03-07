@@ -1,0 +1,136 @@
+/* Body */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+    text-align: center;
+}
+
+/* Tables Layout */
+.tables-container {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.table-wrapper {
+    flex: 1;
+    min-width: 350px;
+    max-width: 48%;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 8px;
+    border: 1px solid black;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+    white-space: nowrap;
+}
+
+/* Forms Layout */
+.forms-container {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 20px;
+}
+
+.form-wrapper {
+    flex: 1;
+    min-width: 350px; 
+    max-width: 48%;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; 
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    max-width: 100%; /* Prevents overflow */
+}
+
+/* Inputs & Selects */
+input, select {
+    padding: 8px;
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box; 
+}
+
+/* Buttons */
+button {
+    margin-top: 10px;
+    padding: 8px 15px;
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Status Colours */
+.green {
+    background-color: #d4edda !important;
+    color: #155724;
+    font-weight: bold;
+}
+
+.red {
+    background-color: #f8d7da !important;
+    color: #721c24;
+    font-weight: bold;
+}
+
+.yellow {
+    background-color: #fff3cd !important; 
+    color: #856404; 
+    font-weight: bold;
+}
+
+
+/* Responsive Fixes */
+@media (max-width: 900px) {
+    .tables-container {
+        flex-direction: column;
+    }
+    
+    .table-wrapper {
+        max-width: 100%; 
+    }
+
+    .forms-container {
+        flex-direction: column;
+    }
+
+    .form-wrapper {
+        max-width: 100%; 
+    }
+}

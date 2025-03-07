@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import a00279259.user_service.dog.Dog;
 import a00279259.user_service.dog.DogClient;
@@ -96,16 +97,56 @@ public class UserResource {
         return ResponseEntity.ok(savedUser); // 200 OK
     }
 	
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable int id) {
-		Optional<User> user = userRepository.findById(id);
-		if (user.isEmpty()) {
-			System.out.println("\ndeleteStudent() :: ID: " + id + " not found.\n");
-			return ResponseEntity.notFound().build();
-		}
-		
-		userRepository.deleteById(id);
-		System.out.println("\ndeleteStudent() :: User deleted successfully.\n");
-		return ResponseEntity.noContent().build(); 
+//    @DeleteMapping("/{id}")
+//    public ResponseEntity<Void> deleteStudent(@PathVariable int id) {
+//		Optional<User> user = userRepository.findById(id);
+//		if (user.isEmpty()) {
+//			System.out.println("\ndeleteStudent() :: ID: " + id + " not found.\n");
+//			return ResponseEntity.notFound().build();
+//		}
+//		
+//		userRepository.deleteById(id);
+//		System.out.println("\ndeleteStudent() :: User deleted successfully.\n");
+//		return ResponseEntity.noContent().build(); 
+//    }
+    
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Integer userId) {
+        Optional<User> existingUser = userRepository.findById(userId);
+        
+        if (existingUser.isEmpty()) {
+            System.out.println("User with ID: " + userId + " does not exist.");
+            return ResponseEntity.notFound().build();
+        }
+
+        User user = existingUser.get();
+        if (user.getDogId() != null) {
+            try {
+                // Call dog-service to mark the dog as available again
+                updateDogAvailability(user.getDogId(), true);
+                System.out.println("Dog ID " + user.getDogId() + " set as available.");
+            } catch (Exception e) {
+                System.err.println("Failed to update dog availability: " + e.getMessage());
+                return ResponseEntity.status(500).body("Failed to update dog availability.");
+            }
+        }
+
+        // Now delete the user
+        userRepository.deleteById(userId);
+        System.out.println("User ID: " + userId + " was successfully deleted.");
+        return ResponseEntity.ok("User ID " + userId + " deleted successfully.");
     }
+    
+    private void updateDogAvailability(Integer dogId, boolean available) {
+        Dog updatedDog = dogClient.getDogById(dogId);
+        updatedDog.setAvailable(available);
+        
+        // Send PUT request to update dog availability
+        RestTemplate restTemplate = new RestTemplate();
+        String updateUrl = "http://localhost:8081/dogs/" + dogId;
+        restTemplate.put(updateUrl, updatedDog);
+    }
+
+
+    
 }

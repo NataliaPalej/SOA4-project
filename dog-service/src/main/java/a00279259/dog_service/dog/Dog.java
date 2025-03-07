@@ -80,7 +80,7 @@ public class Dog {
 	public void setAvailable(boolean available) {
 		this.available = available;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "Dog [dogId=" + dogId + ", name=" + name + ", breed=" + breed + ", age=" + age + ", temperament="
