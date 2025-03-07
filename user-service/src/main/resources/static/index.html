@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User & Dog Management</title>
+    <title>Natalia Palej A00279259</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
     <h1>User & Dog Management</h1>
 
-    <!-- Section for tables -->
-    <div class="tables-container">
-        <!-- Users Table -->
-        <div class="table-wrapper">
+    <div class="container">
+ 		<!-- Users table -->
+        <div class="table-container">
             <h2>Users</h2>
-            <button onclick="fetchUsers()">Refresh Users</button>
-            <p>Status: <span id=usersResponse class="status">Waiting...</span></p>
+            <button class="refresh-btn" onclick="fetchUsers()">Refresh Users</button>
+            <p>Status: <span id="usersResponse" class="status">Waiting...</span></p>
+
             <table id="personTable">
                 <thead>
                     <tr>
@@ -25,7 +25,7 @@
                         <th>Email</th>
                         <th>Preferred Breed</th>
                         <th>Status</th>
-                        <th>Dog ID</th>
+                        <th>Dog (if any)</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -33,11 +33,38 @@
             </table>
         </div>
 
-        <!-- Dogs Table -->
-        <div class="table-wrapper">
+        <!-- Users edit form -->
+        <div class="editUserFormContainer" id="editUserFormContainer" style="display: none;">
+            <h2>Edit User</h2>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <label>Name: <input type="text" id="name" required></label><br>
+                <label>Email: <input type="email" id="email" required></label><br>
+                <label>Preferred Breed: <input type="text" id="preferredBreed"></label><br>
+                <label>Status: 
+                    <select id="status">
+                        <option value="PENDING">PENDING</option>
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="REJECTED">REJECTED</option>
+                    </select>
+                </label><br>
+                <label>Dog ID (Optional): <input type="number" id="dogId"></label><br>
+                <button id="saveUser" type="button" class="save-btn">Save User</button>
+                <button type="button" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
+            </form>
+        </div>
+    </div>
+    
+    <br><br><br><br><br>
+    
+    
+    <div class="container">
+        <!-- Dogs table -->
+        <div class="table-container">
             <h2>Dogs</h2>
-            <button onclick="fetchDogs()">Refresh Dogs</button>
+            <button class="refresh-btn" onclick="fetchDogs()">Refresh Dogs</button>
             <p>Status: <span id="dogsResponse" class="status">Waiting...</span></p>
+
             <table id="dogsTable">
                 <thead>
                     <tr>
@@ -53,35 +80,11 @@
                 <tbody></tbody>
             </table>
         </div>
-    </div>
 
-    <!-- Forms section -->
-    <div class="forms-container">
-    
-        <!-- Add/Edit User Form -->
-        <div class="form-wrapper">
-            <h2>Add / Edit User</h2>
-            <form id="userForm">
-                <input type="hidden" id="userId">
-                <label>Name: <input type="text" id="name" required></label><br>
-                <label>Email: <input type="email" id="email" required></label><br>
-                <label>Preferred Breed: <input type="text" id="preferredBreed"></label><br>
-                <label>Status: 
-                    <select id="status">
-                        <option value="PENDING">PENDING</option>
-                        <option value="APPROVED">APPROVED</option>
-                        <option value="REJECTED">REJECTED</option>
-                    </select>
-                </label><br>
-                <label>Dog ID (Optional): <input type="number" id="dogId"></label><br>
-                <button id="submitUser" type="submit">Save User</button>
-            </form>
-        </div>
-
-        <!-- Add/Edit Dog Form -->
-        <div class="form-wrapper">
-            <h2>Add / Edit Dog</h2>
-            <form id="dogsForm">
+        <!-- Dog edit form -->
+        <div class="editDogFormContainer" id="editDogFormContainer" style="display: none;">
+            <h2>Edit Dog</h2>
+            <form id="dogForm">
                 <input type="hidden" id="dogIdInput">
                 <label>Name: <input type="text" id="dogName" required></label><br>
                 <label>Age: <input type="number" id="dogAge" required></label><br>
@@ -93,12 +96,14 @@
                         <option value="false">No</option>
                     </select>
                 </label><br>
-                <button id="submitDog" type="submit">Save Dog</button>
+                <button id="saveDog" type="button" class="save-btn">Save</button>
+                <button type="button" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
             </form>
         </div>
     </div>
+    
 
-    <script src="script.js" defer></script>
-
+    <script src="script.js"></script> 
+    
 </body>
 </html>

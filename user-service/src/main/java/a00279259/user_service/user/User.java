@@ -12,8 +12,8 @@ public class User {
 	@Id
 	@GeneratedValue
 	private int id;
-	@Column(name = "name")
-	private String name;
+	@Column(name = "username")
+	private String userName;
 	@Column(name = "email")
 	private String email;
 	@Column(name = "preferredbreed")
@@ -27,10 +27,10 @@ public class User {
 		super();
 	}
 
-	public User(int id, String name, String email, String preferredbreed, String status, Integer dogId) {
+	public User(int id, String userName, String email, String preferredbreed, String status, Integer dogId) {
 		super();
 		this.id = id;
-		this.name = name;
+		this.userName = userName;
 		this.email = email;
 		this.preferredbreed = preferredbreed;
 		this.status = status;
@@ -46,11 +46,11 @@ public class User {
 	}
 
 	public String getUserName() {
-		return name;
+		return userName;
 	}
 
-	public void setUserName(String name) {
-		this.name = name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public String getEmail() {
@@ -87,7 +87,7 @@ public class User {
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", email=" + email + ", preferredBreed=" + preferredbreed
+		return "User [id=" + id + ", userName=" + userName + ", email=" + email + ", preferredBreed=" + preferredbreed
 				+ ", status=" + status + ", dogId=" + dogId + "]";
 	}
 }

@@ -5,12 +5,12 @@ import a00279259.user_service.dog.Dog;
 public class UserResponse {
 	
 	private int id;
-	private String name, email, preferredBreed, status;
+	private String userName, email, preferredBreed, status;
 	private Dog dog;
 	
 	public UserResponse(User user, Dog dog) {
 		this.id = user.getId();
-		this.name = user.getUserName();
+		this.userName = user.getUserName();
 		this.email = user.getEmail();
 		this.preferredBreed = user.getPreferredBreed();
 		this.status = user.getStatus();
@@ -30,11 +30,11 @@ public class UserResponse {
 	}
 
 	public String getUserName() {
-		return name;
+		return userName;
 	}
 
-	public void setUserName(String name) {
-		this.name = name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public String getEmail() {
@@ -71,7 +71,7 @@ public class UserResponse {
 
 	@Override
 	public String toString() {
-		return "UserResponse [id=" + id + ", name=" + name + ", email=" + email + ", preferredBreed="
+		return "UserResponse [id=" + id + ", name=" + userName + ", email=" + email + ", preferredBreed="
 				+ preferredBreed + ", status=" + status + ", dog=" + dog + "]";
 	}
 }

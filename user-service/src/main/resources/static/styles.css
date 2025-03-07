@@ -7,41 +7,33 @@ body {
 }
 
 /* Tables Layout */
-.tables-container {
-    display: flex;
-    flex-wrap: wrap; 
+.container {
+	display: flex;
     justify-content: space-between;
-    margin-bottom: 30px;
-    gap: 20px;
+    align-items: flex-start;
+    width: 100%;
 }
 
-.table-wrapper {
-    flex: 1;
-    min-width: 350px;
-    max-width: 48%;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    overflow-x: auto;
+.tables-container {
+    width: 65%;
 }
+
 
 /* Table Styles */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 th, td {
-    padding: 8px;
+    padding: 10px;
     border: 1px solid black;
     text-align: left;
 }
 
 th {
     background-color: #f4f4f4;
-    white-space: nowrap;
 }
 
 /* Forms Layout */
@@ -53,15 +45,13 @@ th {
     gap: 20px;
 }
 
-.form-wrapper {
-    flex: 1;
-    min-width: 350px; 
-    max-width: 48%;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box; 
+.editUserFormContainer, .editDogFormContainer {
+    width: 30%;
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    display: none;
 }
 
 form {
@@ -83,17 +73,54 @@ input, select {
 
 /* Buttons */
 button {
-    margin-top: 10px;
-    padding: 8px 15px;
-    cursor: pointer;
-    background-color: #007BFF;
-    color: white;
-    border: none;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
     border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    margin: 5px;
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+button.edit-btn {
+    background-color: #007bff;
+    color: white;
+}
+
+button.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+button.delete-btn, button.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+button.delete-btn:hover, button.cancel-btn:hover {
+    background-color: #a71d2a;
+}
+
+button.save-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+button.save-btn:hover {
+    background-color: #1e7e34;
+}
+
+button.refresh-btn {
+    background-color: #17a2b8;
+    color: white;
+}
+
+button.refresh-btn:hover {
+    background-color: #117a8b;
 }
 
 /* Status Colours */
