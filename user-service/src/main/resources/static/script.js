@@ -122,7 +122,7 @@ function editUser(id, name, email, preferredBreed, status, dogId) {
     document.getElementById("editUserFormContainer").style.display = "block";
 
     document.getElementById("userId").value = id;
-    document.getElementById("name").value = name;
+    document.getElementById("userName").value = name;
     document.getElementById("email").value = email;
     document.getElementById("preferredBreed").value = preferredBreed;
     document.getElementById("status").value = status;
@@ -159,7 +159,7 @@ function saveUser(userId) {
     }
 
     const updatedUser = {
-        name: document.getElementById("name").value,
+        userName: document.getElementById("userName").value,
         email: document.getElementById("email").value,
         preferredBreed: document.getElementById("preferredBreed").value,
         status: document.getElementById("status").value,
@@ -175,8 +175,8 @@ function saveUser(userId) {
         updateStatus("usersResponse", "saveUser()", response.status);
         if (response.ok) {
             console.log(`saveUser(): User ${userId} updated successfully.`);
-            fetchUsers();
-            fetchDogs();
+            //fetchUsers();
+            //fetchDogs();
             cancelEdit(); // Hide form
         } else {
             console.error("saveUser(): Error updating dog", response);
@@ -209,8 +209,8 @@ function saveDog(dogId) {
         updateStatus("usersResponse", "saveDog()", response.status);
         if (response.ok) {
             console.log(`saveDog(): Dog ${dogId} updated successfully.`);
-            fetchDogs();
-            fetchUsers();
+            //fetchDogs();
+            //fetchUsers();
             cancelEdit(); 
         } else {
             console.error("saveDog(): Error updating dog", response);
