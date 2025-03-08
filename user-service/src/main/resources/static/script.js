@@ -151,7 +151,7 @@ function editDog(id, name, age, breed, temperament, available) {
     };
 }
 
-/** Save edited user **/
+/** Edit user **/
 function saveUser(userId) {
     if (!userId) {
         console.error("saveUser(): User ID doesnt exist.");
@@ -185,7 +185,7 @@ function saveUser(userId) {
     .catch(error => console.error("saveUser(): Fetch error:", error));
 }
 
-/** Save edited dog **/
+/** Edit dog **/
 function saveDog(dogId) {
     if (!dogId) {
         console.error("saveDog(): No dog ID provided.");
@@ -236,7 +236,9 @@ function deleteUser(id) {
     fetch(`${USERS_API_URL}/${id}`, { method: "DELETE" })
         .then(response => {
             updateStatus("usersResponse", "deleteUser()", response.status);
-            if (response.ok) fetchUsers();
+            if (response.ok) {
+                console.log(`deleteUser(): User ${id} deleted successfully.`);
+            }
         })
         .catch(error => {
             console.error("deleteUser(): Error deleting user:", error);
@@ -251,12 +253,84 @@ function deleteDog(id) {
     fetch(`${DOGS_API_URL}/${id}`, { method: "DELETE" })
         .then(response => {
             updateStatus("dogsStatus", "deleteDog()", response.status);
-            if (response.ok) fetchDogs();
+            if (response.ok) {
+                console.log(`deleteDog(): Dog ${id} deleted successfully.`);
+            }
         })
         .catch(error => {
             console.error("deleteDog(): Error deleting dog:", error);
             updateStatus("dogsResponse", "deleteDog()", 500);
         });
+}
+
+/** Add user **/
+function addUser() {
+    console.log("addUser() called");addDog
+    
+    console.log("userName:", document.getElementById("userName"));
+    console.log("email:", document.getElementById("email"));
+    console.log("preferredBreed:", document.getElementById("preferredBreed"));
+    console.log("status:", document.getElementById("status"));
+    console.log("dogId:", document.getElementById("dogId"));
+
+    document.getElementById("editUserFormContainer").style.display = "block";
+
+    document.getElementById("userName").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("preferredBreed").value = "";
+    document.getElementById("status").value = "PENDING"; 
+    document.getElementById("dogId").value = "";
+
+    document.getElementById("saveUser").onclick = function() {
+        saveNewUser();
+    };
+}
+
+function saveNewUser() {
+    console.log("saveNewUser() called");
+
+    const newUser = {
+        userName: document.getElementById("userName").value,
+        email: document.getElementById("email").value,
+        preferredBreed: document.getElementById("preferredBreed").value,
+        status: document.getElementById("status").value,
+        dogId: document.getElementById("dogId").value ? parseInt(document.getElementById("dogId").value) : null
+    };
+
+    fetch(USERS_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser)
+    })
+    .then(response => {
+        updateStatus("usersResponse", "saveNewUser()", response.status);
+        if (response.ok) {
+            console.log("saveNewUser(): New user added successfully.");
+            //fetchUsers(); 
+            cancelEdit(); 
+        } else {
+            console.error("saveNewUser(): Error adding user", response);
+        }
+    })
+    .catch(error => console.error("saveNewUser(): Fetch error:", error));
+}
+
+/** Add dog **/
+function addDog() {
+    console.log("addDog() called");
+	
+    document.getElementById("editDogFormContainer").style.display = "block";
+
+    document.getElementById("dogIdInput").value = "";
+    document.getElementById("dogName").value = "";
+    document.getElementById("dogAge").value = "";
+    document.getElementById("dogBreed").value = "";
+    document.getElementById("dogTemperament").value = "";
+    document.getElementById("dogAvailable").value = "true"; // Default to Yes
+
+    document.getElementById("saveDog").onclick = function () {
+        saveDog();
+    };
 }
 
 /** Update response **/
@@ -272,19 +346,19 @@ function updateStatus(elementId, functionName, statusCode) {
 
     switch (statusCode) {
         case 200:
-            statusMessage += "200 OK (Success)";
+            statusMessage += "200 OK - Success";
             statusElement.style.color = "green";
             break;
         case 201:
-            statusMessage += "201 Created (Success)";
+            statusMessage += "201 Created - Success";
             statusElement.style.color = "green";
             break;
         case 204:
-            statusMessage += "204 Deleted (No Content)";
+            statusMessage += "204 Deleted - No Content";
             statusElement.style.color = "gray";
             break;
         case 304:
-            statusMessage += "304 Not Modified (Cached)";
+            statusMessage += "304 Not Modified - Cached";
             statusElement.style.color = "blue";
             break;
         case 400:

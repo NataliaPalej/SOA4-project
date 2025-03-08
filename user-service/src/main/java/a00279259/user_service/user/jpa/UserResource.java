@@ -69,6 +69,20 @@ public class UserResource {
 	
 	@PostMapping
     public ResponseEntity<User> addUser(@RequestBody User user) {
+		if (user.getId() != 0) {
+	        return ResponseEntity.badRequest().body(null); // 400 Bad Request
+	    }
+		
+		user.setId(0); 
+		
+		if (user.getDogId() != null) {  
+	        Dog dog = dogClient.getDogById(user.getDogId());
+	        if (dog == null) {
+	            System.out.println("\naddUser() :: Dog ID " + user.getDogId() + " not found.");
+	            return ResponseEntity.badRequest().body(null); // 400 Bad Request
+	        }
+	    }
+		
 		User savedUser = userRepository.save(user);
         URI location = URI.create("/users/" + savedUser.getId());
         System.out.println("\npost() :: user was created successfully");
@@ -116,7 +130,7 @@ public class UserResource {
         
         if (existingUser.isEmpty()) {
             System.out.println("User with ID: " + userId + " does not exist.");
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build(); // 404 Not Found
         }
 
         User user = existingUser.get();
@@ -131,10 +145,10 @@ public class UserResource {
             }
         }
 
-        // Now delete the user
+        // Delete the user
         userRepository.deleteById(userId);
         System.out.println("User ID: " + userId + " was successfully deleted.");
-        return ResponseEntity.ok("User ID " + userId + " deleted successfully.");
+        return ResponseEntity.noContent().build();
     }
     
     private void updateDogAvailability(Integer dogId, boolean available) {

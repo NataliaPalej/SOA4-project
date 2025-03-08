@@ -3,6 +3,7 @@ package a00279259.user_service.user;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 // Renamed table to "person" as "user" is reserved keyword in H2 
@@ -10,7 +11,7 @@ import jakarta.persistence.Id;
 public class User {
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	@Column(name = "username")
 	private String userName;

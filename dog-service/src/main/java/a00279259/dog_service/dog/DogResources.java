@@ -85,7 +85,7 @@ public class DogResources {
 		
 		dogRepository.deleteById(dogId);
 		System.out.println("Dog ID: " + dogId + " was successfully deleted.");
-		return ResponseEntity.ok("Dog ID " + dogId + " deleted successfully.");
+		return ResponseEntity.noContent().build();
 	}
 	
 }
