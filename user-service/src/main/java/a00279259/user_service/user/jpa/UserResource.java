@@ -39,6 +39,21 @@ public class UserResource {
 		return userRepository.findAll();
 	}
 	
+//	@GetMapping
+//	public ResponseEntity<List<User>> getAllUsers(HttpServletRequest request) {
+//	    List<User> users = userRepository.findAll();
+//
+//	    String etag = String.valueOf(users.hashCode());
+//
+//	    String ifNoneMatch = request.getHeader("If-None-Match");
+//	    if (ifNoneMatch != null && ifNoneMatch.equals(etag)) {
+//	        return ResponseEntity.status(304).eTag(etag).build();
+//	    }
+//
+//	    return ResponseEntity.ok().eTag(etag).body(users);
+//	}
+
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<UserResponse> getUser(@PathVariable int id) {
 	    Optional<User> user = userRepository.findById(id);
@@ -69,20 +84,6 @@ public class UserResource {
 	
 	@PostMapping
     public ResponseEntity<User> addUser(@RequestBody User user) {
-		if (user.getId() != 0) {
-	        return ResponseEntity.badRequest().body(null); // 400 Bad Request
-	    }
-		
-		user.setId(0); 
-		
-		if (user.getDogId() != null) {  
-	        Dog dog = dogClient.getDogById(user.getDogId());
-	        if (dog == null) {
-	            System.out.println("\naddUser() :: Dog ID " + user.getDogId() + " not found.");
-	            return ResponseEntity.badRequest().body(null); // 400 Bad Request
-	        }
-	    }
-		
 		User savedUser = userRepository.save(user);
         URI location = URI.create("/users/" + savedUser.getId());
         System.out.println("\npost() :: user was created successfully");

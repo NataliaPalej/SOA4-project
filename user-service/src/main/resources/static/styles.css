@@ -6,10 +6,48 @@ body {
     text-align: center;
 }
 
-/* Tables Layout */
+body::before {
+    content: "";
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/background3.jpg');
+    background-position: center;
+    opacity: 0.3; 
+    z-index: -1; 
+}
+
+/* Image Container */
+.image-container {
+    position: relative;
+    width: 100%;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.image-container h1 {
+    position: absolute;
+    top: 15%; 
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.6); 
+    border-radius: 10px;
+    font-size: 2rem; 
+    text-align: center;
+    font-family: 'Playfair Display', serif; 
+}
+
+/* Table */
 .container {
 	display: flex;
-    justify-content: space-between;
     align-items: flex-start;
     width: 100%;
 }
@@ -18,8 +56,6 @@ body {
     width: 65%;
 }
 
-
-/* Table Styles */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -36,33 +72,34 @@ th {
     background-color: #f4f4f4;
 }
 
-/* Forms Layout */
+/* Form */
 .forms-container {
     display: flex;
     flex-wrap: wrap; 
     justify-content: space-between;
     margin-top: 20px;
-    gap: 20px;
+    
 }
 
 .editUserFormContainer, .editDogFormContainer {
     width: 30%;
     background: #f8f9fa;
-    padding: 20px;
+    padding: 10px;
     border-radius: 10px;
     border: 1px solid #ddd;
     display: none;
+    margin-left: 40px;
+    margin-top: 20px;
 }
 
 form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 2px;
     text-align: left;
     max-width: 100%; /* Prevents overflow */
 }
 
-/* Inputs & Selects */
 input, select {
     padding: 8px;
     width: 100%;
@@ -142,8 +179,40 @@ button.refresh-btn:hover {
     font-weight: bold;
 }
 
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%; 
+    z-index: 100;
+}
 
-/* Responsive Fixes */
+.footer-container {
+    position: relative;
+    width: 100%;
+    margin-top: 150px; 
+}
+
+.footer-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.footer-text {
+    position: absolute;
+    top: 25%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: black; 
+    font-size: 1rem;
+    padding: 10px 20px;
+}
+
+
+
+/* Responsive */
 @media (max-width: 900px) {
     .tables-container {
         flex-direction: column;

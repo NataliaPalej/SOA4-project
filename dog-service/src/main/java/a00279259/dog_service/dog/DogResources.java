@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import a00279259.dog_service.dog.jpa.DogRepository;
 
-@CrossOrigin(origins = "http://localhost:8080") 
+@CrossOrigin(origins = "http://localhost:8080", exposedHeaders = "ETag") 
 @RestController
-@RequestMapping("/dogs") // set base URL
+@RequestMapping("/dogs")
 public class DogResources {
 	
 	private DogRepository dogRepository;
@@ -34,6 +34,27 @@ public class DogResources {
 	public List<Dog> getAllDogs(){
 		return dogRepository.findAll();
 	}
+	
+//	@GetMapping
+//	public ResponseEntity<List<Dog>> getAllDogs(HttpServletRequest request) throws JsonProcessingException {
+//	    List<Dog> dogs = dogRepository.findAll();
+//
+//	    // Generate ETag based on dogs data (e.g., hashCode)
+////	    String etag = String.valueOf(dogs.hashCode());
+//	    String etag = DigestUtils.md5DigestAsHex(new ObjectMapper().writeValueAsBytes(dogs));
+//
+//
+//	    // Check for If-None-Match header from request
+//	    String ifNoneMatch = request.getHeader("If-None-Match");
+//	    if (ifNoneMatch != null && ifNoneMatch.equals(etag)) {
+//	        // If ETag matches, return 304
+//	        return ResponseEntity.status(304).eTag(etag).build();
+//	    }
+//
+//	    // If not matched, return data with ETag
+//	    return ResponseEntity.ok().eTag(etag).body(dogs);
+//	}
+
 	
 	@GetMapping("/{dogId}")
 	public ResponseEntity<Dog> getDog(@PathVariable Integer dogId){
@@ -54,8 +75,8 @@ public class DogResources {
 	@PostMapping
 	public ResponseEntity<Dog> postDog(@RequestBody Dog dog){
 		Dog savedDog = dogRepository.save(dog);
-		URI location = URI.create("/dogs/" + savedDog.getdogId());
-		System.out.println("Dog " + dog + " was successfully saved");
+		URI location = URI.create("/dogs/" + savedDog.getDogId());
+		System.out.println("Dog " + dog + " saved successfully");
 		return ResponseEntity.created(location).body(savedDog);
 	}
 	
@@ -68,7 +89,7 @@ public class DogResources {
 			return ResponseEntity.notFound().build();
 		}
 		// Ensure the ID stays the same
-		updatedDog.setdogId(dogId); 
+		updatedDog.setDogId(dogId); 
 		Dog savedDog = dogRepository.save(updatedDog);
 		System.out.println("Dog " + dogId + " was successfully updated");
 		return ResponseEntity.ok(savedDog); // 200 OK

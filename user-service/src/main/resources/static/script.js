@@ -1,45 +1,34 @@
 const USERS_API_URL = "http://localhost:8080/users";
 const DOGS_API_URL = "http://localhost:8081/dogs";
 
-console.log("script.js loaded");
+// console.log("script.js loaded");
+
+let usersCacheEtag = null;
+let dogsCacheEtag = null;
+let usersCache = [];
 
 /** Get users **/
 function fetchUsers() {
-    fetch(USERS_API_URL)
+    const headers = {};
+    if (usersCacheEtag) headers["If-None-Match"] = usersCacheEtag;
+
+    fetch(USERS_API_URL, { headers })
         .then(response => {
-            updateStatus("usersResponse", "fetchUsers()", response.status);
+			usersCacheEtag = response.headers.get("ETag");
+			console.log("New Users ETag:", usersCacheEtag);
+            updateStatus("usersResponse", `fetchUsers()`, response.status);
+            usersResponse.innerText += `\nETag: ${usersCacheEtag}`;
+            if (response.status === 304) {
+                // console.log("fetchUsers(): 304 Not Modified, using cached data");
+                renderUsers(usersCache); // Use cached version
+                return;
+            }
             return response.json();
         })
         .then(users => {
-            if (!users || users.length === 0) {
-                console.warn("No users found.");
-                return;
-            }
-            const tableBody = document.querySelector("#personTable tbody");
-            tableBody.innerHTML = "";
-
-            users.forEach(user => {
-				console.log("User: ", user)
-				
-                let statusClass = "yellow"; // Default yellow
-                if (user.status === "APPROVED") statusClass = "green"; 
-                if (user.status === "REJECTED") statusClass = "red"; 
-
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>${user.id}</td>
-                    <td>${user.userName}</td>
-                    <td>${user.email}</td>
-                    <td>${user.preferredBreed}</td>
-                    <td class="${statusClass}">${user.status}</td>
-                    <td>${user.dogId ? `${user.dogId}` : "N/A"}</td>
-                    <td>
-                        <button class="edit-btn" onclick="editUser(${user.id}, '${user.userName}', '${user.email}', '${user.preferredBreed}', '${user.status}', ${user.dogId ? user.dogId : 'null'})">Edit</button>
-                        <button class="delete-btn" onclick="deleteUser(${user.id})">Delete</button>
-                    </td>
-                `;
-                tableBody.appendChild(row);
-            });
+            if (!users) return;
+            usersCache = users;
+            renderUsers(usersCache);
         })
         .catch(error => {
             console.error("fetchUsers(): Error fetching users:", error);
@@ -47,67 +36,55 @@ function fetchUsers() {
         });
 }
 
-/** Get dogs **/
+function renderUsers(users) {
+    const tableBody = document.querySelector("#personTable tbody");
+    tableBody.innerHTML = "";
+
+    users.forEach(user => {
+        let statusClass = "yellow";
+        if (user.status === "APPROVED") statusClass = "green";
+        if (user.status === "REJECTED") statusClass = "red";
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.userName}</td>
+            <td>${user.email}</td>
+            <td>${user.preferredBreed}</td>
+            <td class="${statusClass}">${user.status}</td>
+            <td>${user.dogId ? `${user.dogId}` : "N/A"}</td>
+            <td>
+                <button class="edit-btn" onclick="editUser(${user.id}, '${user.userName}', '${user.email}', '${user.preferredBreed}', '${user.status}', ${user.dogId || 'null'})">Edit</button>
+                <button class="delete-btn" onclick="deleteUser(${user.id})">Delete</button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+/** Fetch Dogs **/
 function fetchDogs() {
-    fetch(DOGS_API_URL)
+    const headers = {};
+    if (dogsCacheEtag) headers["If-None-Match"] = dogsCacheEtag;
+
+    fetch(DOGS_API_URL, { headers })
         .then(response => {
-            updateStatus("dogsResponse", "fetchDogs()", response.status);
+			dogsCacheEtag = response.headers.get("ETag");
+			console.log("New Dogs ETag:", dogsCacheEtag);
+            updateStatus("dogsResponse", `fetchDogs()`, response.status);
+            dogsResponse.innerText += `\nETag: ${dogsCacheEtag}`;
+            if (response.status === 304) {
+                // console.log("fetchDogs(): 304 Not Modified, cached");
+                fetchUsersForDogs(dogsCache);
+                return;
+            }
             return response.json();
         })
         .then(dogs => {
-            fetch(USERS_API_URL) // Fetch users to check adoption status
-                .then(response => response.json())
-                .then(users => {
-                    console.log("Users Data:", users);
-
-                    // Track which dogs are adopted or reserved
-                    let adoptedDogs = new Set();
-                    let pendingDogs = new Set();
-
-                    users.forEach(user => {
-                        if (user.dogId) {
-                            if (user.status === "APPROVED") {
-                                adoptedDogs.add(user.dogId);
-                            } else if (user.status === "PENDING") {
-                                pendingDogs.add(user.dogId);
-                            }
-                        }
-                    });
-
-                    // Render Dog Table
-                    const tableBody = document.querySelector("#dogsTable tbody");
-                    tableBody.innerHTML = "";
-
-                    dogs.forEach(dog => {
-                        let statusClass = "green"; // Default Available
-                        let statusText = "Yes";
-
-                        if (adoptedDogs.has(dog.dogId)) {
-                            statusClass = "red";  // Taken
-                            statusText = "No";
-                        } else if (pendingDogs.has(dog.dogId)) {
-                            statusClass = "yellow"; 
-                        }
-
-                        const row = document.createElement("tr");
-                        row.innerHTML = `
-                            <td>${dog.dogId}</td>
-                            <td>${dog.name}</td>
-                            <td>${dog.age}</td>
-                            <td>${dog.breed}</td>
-                            <td>${dog.temperament}</td>
-                            <td class="${statusClass}">${statusText}</td>
-                            <td>
-                                <button class="edit-btn" onclick="editDog(${dog.dogId}, '${dog.name}', ${dog.age}, '${dog.breed}', '${dog.temperament}', ${dog.available})">Edit</button>
-                                <button class="delete-btn" onclick="deleteDog(${dog.dogId})">Delete</button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
-                })
-                .catch(error => {
-                    console.error("fetchDogs(): Error fetching users:", error);
-                });
+            if (!dogs) return;
+             // Pass cached users
+            dogsCache = dogs;
+            renderDogs(dogs, usersCache);
         })
         .catch(error => {
             console.error("fetchDogs(): Error fetching dogs:", error);
@@ -115,9 +92,67 @@ function fetchDogs() {
         });
 }
 
+function renderDogs(dogs, users) {
+    const tableBody = document.querySelector("#dogsTable tbody");
+    tableBody.innerHTML = "";
+
+    let adoptedDogs = new Set();
+    let pendingDogs = new Set();
+
+    users.forEach(user => {
+        if (user.dogId) {
+            if (user.status === "APPROVED") {
+                adoptedDogs.add(user.dogId);
+            } else if (user.status === "PENDING") {
+                pendingDogs.add(user.dogId);
+            }
+        }
+    });
+
+    dogs.forEach(dog => {
+        let statusClass = "green"; // Default available
+        let statusText = "Yes";
+
+        if (adoptedDogs.has(dog.dogId)) {
+            statusClass = "red"; // Taken
+            statusText = "No";
+        } else if (pendingDogs.has(dog.dogId)) {
+            statusClass = "yellow"; // Pending
+        }
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${dog.dogId}</td>
+            <td>${dog.name}</td>
+            <td>${dog.age}</td>
+            <td>${dog.breed}</td>
+            <td>${dog.temperament}</td>
+            <td class="${statusClass}">${statusText}</td>
+            <td>
+                <button class="edit-btn" onclick="editDog(${dog.dogId}, '${dog.name}', ${dog.age}, '${dog.breed}', '${dog.temperament}', ${dog.available})">Edit</button>
+                <button class="delete-btn" onclick="deleteDog(${dog.dogId})">Delete</button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function fetchUsersForDogs(dogs) {
+    fetch(USERS_API_URL)
+        .then(response => response.json())
+        .then(users => {
+            usersCache = users;
+            renderDogs(dogs, users);
+        })
+        .catch(error => {
+            console.error("fetchUsersForDogs(): Error fetching users:", error);
+            updateStatus("dogsResponse", "fetchUsersForDogs()", 500);
+        });
+}
+
 /** Users edit form **/
 function editUser(id, name, email, preferredBreed, status, dogId) {
-	console.log("editUser() id:", id);
+	// console.log("editUser() id:", id);
 	
     document.getElementById("editUserFormContainer").style.display = "block";
 
@@ -135,7 +170,7 @@ function editUser(id, name, email, preferredBreed, status, dogId) {
 
 /** Dogs edit form **/
 function editDog(id, name, age, breed, temperament, available) {
-	console.log("editDog() id:", id);
+	//  console.log("editDog() id:", id);
 	
     document.getElementById("editDogFormContainer").style.display = "block";
 
@@ -176,7 +211,7 @@ function saveUser(userId) {
         if (response.ok) {
             console.log(`saveUser(): User ${userId} updated successfully.`);
             //fetchUsers();
-            //fetchDogs();
+            fetchDogs();
             cancelEdit(); // Hide form
         } else {
             console.error("saveUser(): Error updating dog", response);
@@ -188,7 +223,7 @@ function saveUser(userId) {
 /** Edit dog **/
 function saveDog(dogId) {
     if (!dogId) {
-        console.error("saveDog(): No dog ID provided.");
+        // console.error("saveDog(): No dog ID provided.");
         return;
     }
 
@@ -208,7 +243,7 @@ function saveDog(dogId) {
     .then(response => {
         updateStatus("usersResponse", "saveDog()", response.status);
         if (response.ok) {
-            console.log(`saveDog(): Dog ${dogId} updated successfully.`);
+            // console.log(`saveDog(): Dog ${dogId} updated successfully.`);
             //fetchDogs();
             //fetchUsers();
             cancelEdit(); 
@@ -218,7 +253,6 @@ function saveDog(dogId) {
     })
     .catch(error => console.error("saveDog(): Fetch error:", error));
 }
-
 
 /** Hide form when "cancel" is clicked **/
 function cancelEdit() {
@@ -265,13 +299,13 @@ function deleteDog(id) {
 
 /** Add user **/
 function addUser() {
-    console.log("addUser() called");addDog
+    // console.log("addUser() called");addDog
     
-    console.log("userName:", document.getElementById("userName"));
-    console.log("email:", document.getElementById("email"));
-    console.log("preferredBreed:", document.getElementById("preferredBreed"));
-    console.log("status:", document.getElementById("status"));
-    console.log("dogId:", document.getElementById("dogId"));
+    // console.log("userName:", document.getElementById("userName"));
+    // console.log("email:", document.getElementById("email"));
+    // console.log("preferredBreed:", document.getElementById("preferredBreed"));
+    // console.log("status:", document.getElementById("status"));
+    // console.log("dogId:", document.getElementById("dogId"));
 
     document.getElementById("editUserFormContainer").style.display = "block";
 
@@ -287,7 +321,7 @@ function addUser() {
 }
 
 function saveNewUser() {
-    console.log("saveNewUser() called");
+    // console.log("saveNewUser() called");
 
     const newUser = {
         userName: document.getElementById("userName").value,
@@ -305,7 +339,7 @@ function saveNewUser() {
     .then(response => {
         updateStatus("usersResponse", "saveNewUser()", response.status);
         if (response.ok) {
-            console.log("saveNewUser(): New user added successfully.");
+            // console.log("saveNewUser(): New user added successfully.");
             //fetchUsers(); 
             cancelEdit(); 
         } else {
@@ -317,20 +351,50 @@ function saveNewUser() {
 
 /** Add dog **/
 function addDog() {
-    console.log("addDog() called");
+    // console.log("addDog() called");
 	
     document.getElementById("editDogFormContainer").style.display = "block";
 
-    document.getElementById("dogIdInput").value = "";
     document.getElementById("dogName").value = "";
     document.getElementById("dogAge").value = "";
     document.getElementById("dogBreed").value = "";
     document.getElementById("dogTemperament").value = "";
-    document.getElementById("dogAvailable").value = "true"; // Default to Yes
+    document.getElementById("dogAvailable").value = "true";
 
     document.getElementById("saveDog").onclick = function () {
-        saveDog();
+        saveNewDog();
     };
+}
+
+function saveNewDog() {
+    // console.log("saveNewDog() called");
+
+    const newDog = {
+        name: document.getElementById("dogName").value,
+        age: parseInt(document.getElementById("dogAge").value),
+        breed: document.getElementById("dogBreed").value,
+        temperament: document.getElementById("dogTemperament").value,
+        available: document.getElementById("dogAvailable").value === "true"
+    };
+
+	// console.log("NEW DOG: ", newDog);
+	
+    fetch(DOGS_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newDog)
+    })
+    .then(response => {
+        updateStatus("dogsResponse", "saveNewDog()", response.status);
+        if (response.ok) {
+            console.log("saveNewUser(): New user added successfully.");
+            //fetchUsers(); 
+            cancelEdit(); 
+        } else {
+            console.error("saveNewDog(): Error adding dog", response);
+        }
+    })
+    .catch(error => console.error("saveNewDog(): Fetch error:", error));
 }
 
 /** Update response **/
@@ -338,7 +402,7 @@ function updateStatus(elementId, functionName, statusCode) {
     const statusElement = document.getElementById(elementId);
 
     if (!statusElement) {
-        console.error(`updateStatus(): Element with id '${elementId}' not found.`);
+        // console.error(`updateStatus(): Element with id '${elementId}' not found.`);
         return;
     }
     
@@ -378,11 +442,11 @@ function updateStatus(elementId, functionName, statusCode) {
             statusElement.style.color = "orange";
     }
     statusElement.innerText = statusMessage;
-    console.log(`updateStatus(): Updated status of '${elementId}' to '${statusMessage}'`);
+    // console.log(`updateStatus(): Updated status of '${elementId}' to '${statusMessage}'`);
 }
 
 
 window.onload = function() {
     fetchUsers();
-    fetchDogs();
+    setTimeout(fetchDogs, 500);
 };

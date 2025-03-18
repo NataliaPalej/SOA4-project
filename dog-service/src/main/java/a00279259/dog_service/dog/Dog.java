@@ -36,11 +36,11 @@ public class Dog {
     }
 
 	
-	public Integer getdogId() {
+	public Integer getDogId() {
 		return dogId;
 	}
 	
-	public void setdogId(Integer dogId) {
+	public void setDogId(Integer dogId) {
 		this.dogId = dogId;
 	}
 	
